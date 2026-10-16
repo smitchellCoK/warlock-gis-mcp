@@ -1,0 +1,18 @@
+{
+  "name": "warlock-gis-mcp",
+  "version": "0.1.0",
+  "description": "Warlock GIS MCP: read-only schema inspection of one dataset in the PROD enterprise geodatabase (one tool: inspect_gis_dataset).",
+  "private": true,
+  "type": "module",
+  "main": "src/server.mjs",
+  "scripts": {
+    "start": "node src/server.mjs",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.1"
+  }
+}

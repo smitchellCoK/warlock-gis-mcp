@@ -1,0 +1,5 @@
+{
+  "pythonExe": "C:\\Program Files\\ArcGIS\\Pro\\bin\\Python\\envs\\arcgispro-py3\\python.exe",
+  "sdeConnectionFile": "C:\\path\\to\\PROD_READ_ONLY.sde",
+  "timeoutSeconds": 60
+}

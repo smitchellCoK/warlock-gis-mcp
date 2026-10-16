@@ -1,0 +1,16 @@
+# Connection files and local configuration never enter Git.
+*.sde
+config.json
+
+# Logs and local output
+*.log
+logs/
+
+# Dependencies
+node_modules/
+
+# Python / OS noise
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
