@@ -1,0 +1,31 @@
+{
+  "manifest_version": "0.2",
+  "name": "warlock-gis-mcp",
+  "display_name": "Warlock GIS Schema",
+  "version": "0.1.1",
+  "description": "One tool: read-only schema inspection of one dataset in the City GIS PROD enterprise geodatabase, through a fixed local read-only connection. No other GIS operations.",
+  "author": {
+    "name": "Sam Mitchell, City of Kelowna GIS"
+  },
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/server/index.js"]
+    }
+  },
+  "tools": [
+    {
+      "name": "inspect_gis_dataset",
+      "description": "Read-only inspection of one dataset's schema (fields, subtypes, referenced domains, versioning) in the GIS PROD geodatabase."
+    }
+  ],
+  "compatibility": {
+    "platforms": ["win32"],
+    "runtimes": {
+      "node": ">=18.0.0"
+    }
+  },
+  "license": "UNLICENSED"
+}

@@ -1,16 +1,27 @@
-# Connection files and local configuration never enter Git.
+# Connection files, local configuration and secrets never enter Git
+# (or the .mcpb bundle).
 *.sde
 config.json
+.env
+.env.*
+*.local.json
+*secret*
+*credential*
+claude_desktop_config.json
 
 # Logs and local output
 *.log
 logs/
 
-# Dependencies
+# Build output and dependencies
+dist/
+*.mcpb
+*.dxt
 node_modules/
 
-# Python / OS noise
+# Python / OS / editor noise
 __pycache__/
 *.pyc
 .DS_Store
 Thumbs.db
+.vscode/

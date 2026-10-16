@@ -1,6 +1,6 @@
 """Warlock GIS MCP - read-only dataset schema inspection worker (v0.1).
 
-Run only by src/server.mjs with ArcGIS Pro's Python:
+Run only by server/core.js with ArcGIS Pro's Python:
 
     python.exe inspect_dataset.py <DATASET>
 
@@ -10,8 +10,8 @@ discards.
 
 Safety boundary:
 - The connection file comes only from the fixed local config file
-  (%LOCALAPPDATA%\\WarlockGisMcp\\config.json). The caller cannot supply a
-  path, environment, SQL, or code.
+  (%LOCALAPPDATA%\\WarlockGisMcp\\config.json, as resolved by the server).
+  The caller cannot supply a path, environment, SQL, or code.
 - Only metadata calls are used: Exists, Describe, ListFields,
   ListDatasets, da.ListDomains, da.ListSubtypes. No cursors, no SQL, no
   geoprocessing tools, no writes.
@@ -94,14 +94,48 @@ def jsonable(value):
 # Configuration
 #----------------------------------------------------------------------
 
+CONFIG_ENV_VAR = "WARLOCK_GIS_MCP_CONFIG"
+
+
+def is_config_file_path(candidate):
+    """Absolute path ending in WarlockGisMcp\\config.json (any case)."""
+
+    if not isinstance(candidate, str) or not os.path.isabs(candidate):
+        return False
+    folder, name = os.path.split(os.path.normpath(candidate))
+    return (
+        name.lower() == CONFIG_FILE_NAME
+        and os.path.basename(folder).lower() == CONFIG_DIR_NAME.lower()
+    )
+
+
+def config_candidates():
+    """The config path resolved by the server, else the same locations the
+    server checks (for a direct run by an engineer)."""
+
+    candidates = []
+    from_server = os.environ.get(CONFIG_ENV_VAR, "")
+    if from_server:
+        # Set by the server only. Anything that is not a WarlockGisMcp
+        # config.json path fails closed rather than falling back.
+        return [from_server] if is_config_file_path(from_server) else []
+
+    for base in (
+        os.environ.get("LOCALAPPDATA", ""),
+        os.path.join(os.environ.get("USERPROFILE", ""), "AppData", "Local")
+        if os.environ.get("USERPROFILE") else "",
+    ):
+        if base and os.path.isabs(base):
+            candidates.append(os.path.join(base, CONFIG_DIR_NAME, CONFIG_FILE_NAME))
+    return candidates
+
+
 def load_connection_file():
     """Fixed, local, read-only PROD connection file from the config file."""
 
-    base = os.environ.get("LOCALAPPDATA", "")
-    if not base:
+    config_path = next((c for c in config_candidates() if os.path.isfile(c)), None)
+    if config_path is None:
         raise InspectionError("CONFIG_ERROR")
-
-    config_path = os.path.join(base, CONFIG_DIR_NAME, CONFIG_FILE_NAME)
 
     try:
         with open(config_path, "r", encoding="utf-8") as handle:
